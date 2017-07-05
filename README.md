@@ -1,4 +1,6 @@
 # jxc-starter
+进销存
+
 1、项目使用的内容说明
 	1）jpa
 	2）spring
