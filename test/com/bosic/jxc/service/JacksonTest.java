@@ -24,6 +24,8 @@ public class JacksonTest {
 	private ObjectMapper objectMapper = null;
 	@Autowired
 	private ResourceService resourceService;
+	
+	
 	@Before
 	public void init() {
 		objectMapper = new ObjectMapper();
