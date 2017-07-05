@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.0.xsd">
+
+	<!--加载配置文件 -->
+	<context:property-placeholder location="classpath:jdbc.properties" />
+
+	<!--扫描包，排除springMVC扫描的包，重复扫描会有问题 -->
+	<context:component-scan base-package="com.bosic.jxc.service" />
+
+	<!--配置数据源 -->
+	 <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"  
+        destroy-method="close">  
+        <property name="driverClass" value="${jdbc.driver}" />  
+        <property name="jdbcUrl" value="${jdbc.url}" />  
+        <property name="user" value="${jdbc.username}" />  
+        <property name="password" value="${jdbc.password}" />  
+  
+        <!-- 请求超时时间 -->  
+        <property name="checkoutTimeout" value="30000" />  
+        <!-- 每60秒检查所有连接池中的空闲连接。默认值: 0，不检查 -->  
+        <property name="idleConnectionTestPeriod" value="30" />  
+        <!-- 连接数据库连接池最大空闲时间 -->  
+        <property name="maxIdleTime" value="30" />  
+        <!-- 连接池初始化连接数 -->  
+        <property name="initialPoolSize" value="5" />  
+        <property name="minPoolSize" value="5" />  
+        <property name="maxPoolSize" value="20" />  
+        <!--当连接池中的连接耗尽的时候c3p0一次同时获取的连接数。默认值: 3 -->  
+        <property name="acquireIncrement" value="5" />  
+    </bean>  
+
+
+	<!--jpa管理工厂 -->
+	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<!--数据源 -->
+		<property name="dataSource" ref="dataSource" />
+		<!--适配器 -->
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+				<property name="showSql" value="false" />
+				<property name="database" value="MYSQL" />
+			</bean>
+		</property>
+
+		<!--扫描包 -->
+		<property name="packagesToScan" value="com.bosic.jxc.domain" />
+
+
+		<!--基本配置 -->
+		<property name="jpaProperties">
+			<props>
+				<!--命名策略 -->
+				<prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
+
+				<!--基本配置 -->
+				<prop key="hibernate.format_sql">false</prop>
+				<prop key="hibernate.show_sql">false</prop>
+				<!-- <prop key="hibernate.hbm2ddl.auto">update</prop> -->
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</prop>
+
+				<!--二级缓存 -->
+				<!-- 
+				<prop key="hibernate.cache.use_query_cache">true</prop>
+				<prop key="hibernate.cache.use_second_level_cache">true</prop>
+				<prop key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</prop>
+				-->
+			</props>
+		</property>
+
+		<property name="sharedCacheMode" value="ENABLE_SELECTIVE" />
+	</bean>
+
+
+	<!--配置事务 -->
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+
+	<!--配置基于注解的事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<!--配置spring data -->
+	<jpa:repositories base-package="com.bosic.jxc.domain"
+		entity-manager-factory-ref="entityManagerFactory" />
+
+</beans>
