@@ -83,7 +83,6 @@
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
 	<!--配置spring data -->
-	<jpa:repositories base-package="com.bosic.jxc.domain"
-		entity-manager-factory-ref="entityManagerFactory" />
+	<jpa:repositories base-package="com.bosic.jxc.domain" entity-manager-factory-ref="entityManagerFactory" />
 
 </beans>
