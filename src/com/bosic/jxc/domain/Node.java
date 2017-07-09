@@ -3,11 +3,6 @@ package com.bosic.jxc.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 表示树的节点
- * @author Administrator
- *
- */
 public class Node {
 	private Integer id;
 	private Integer parentId;
